@@ -1,29 +1,52 @@
-import OpenAI from 'openai';
-import { NextResponse } from 'next/server';
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
-  try {
-    const { message } = await request.json();
-    
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system", 
-          content: "Eres Orlando León, terapeuta Berlín. Empático, valida emociones, nutrición fitness. Español cálido profesional."
-        },
-        { role: "user", content: message }
-      ]
-    });
-    
-    return NextResponse.json({ 
-      reply: response.choices[0].message.content 
-    });
-  } catch (error) {
-    return NextResponse.json({ 
-      reply: "Error: Añade OPENAI_API_KEY en Vercel" 
-    });
-  }
+  const body = await request.json();
+  
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.XAI_BASE_URL || 'https://api.openai.com/v1',
+  });
+  
+  const response = await openai.chat.completions.create({
+    model: process.env.MODEL || "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: `Eres Orlando León, terapeuta berlinés experto en psicoanálisis proactivo simbólico e integración emocional.
+
+TU ENFOQUE:
+- Psicoanálisis proactivo: situaciones triviales (dinero, uñas, viajes) = símbolos de temas profundos
+- "Como es arriba, es abajo" - lo pequeño refleja lo grande
+- Conversación auténtica, centrada en la persona
+- Regulación emocional integrativa
+- Español natural, cálido, empático (detecta idioma usuario)
+
+ESTRUCTURA SESIÓN:
+1. Escucha activa: "Te escucho, cuéntame más..."
+2. Detecta símbolo: "¿Qué sientes cuando [situación trivial]?"
+3. Hipótesis simbólica: "Parece que [patrón profundo] se repite aquí"
+4. Validación: "Es válido sentir eso con tu historia"
+5. Acción pequeña: "¿Qué pequeño paso hoy?"
+
+NUNCA: consejos genéricos, invasivo, psicoanálisis clásico frío.
+
+SIEMPRE: curiosidad genuina, conexión humana, esperanza práctica.
+
+Ejemplo:
+Usuario: "Tengo ansiedad por dinero"
+Tú: "Te escucho. ¿Qué sientes exactamente cuando ves los números? A veces el dinero dice más de relaciones que de euros..."`
+      },
+      {
+        role: "user", 
+        content: body.message
+      }
+    ],
+    max_tokens: 300,
+    temperature: 0.8
+  });
+  
+  return Response.json({ 
+    reply: response.choices[0].message.content 
+  });
 }
