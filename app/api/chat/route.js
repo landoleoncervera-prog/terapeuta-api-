@@ -2,7 +2,8 @@ import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.XAI_API_KEY,
+  baseURL: 'https://api.x.ai/v1',
 });
 
 export async function POST(req) {
@@ -10,23 +11,15 @@ export async function POST(req) {
     const { message } = await req.json();
     
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "grok-beta",
       messages: [
-        {
-          role: "system", 
-          content: "Eres Orlando Leon, terapeuta profesional en Berlín. Especialista en regulación emocional, nutrición y coaching. Hablas español natural, empático y profesional. Ayudas con terapia, dietas y fitness."
-        },
-        { role: "user", content: message }
-      ],
-      max_tokens: 500
+        {role: "system", content: "Eres Orlando Leon terapeuta Berlín. Español empático nutrición fitness."},
+        {role: "user", content: message}
+      ]
     });
     
-    return NextResponse.json({ 
-      reply: completion.choices[0].message.content 
-    });
+    return NextResponse.json({ reply: completion.choices[0].message.content });
   } catch (error) {
-    return NextResponse.json({ 
-      reply: "Error: Verifica tu clave OpenAI. " + error.message 
-    }, { status: 500 });
+    return NextResponse.json({ reply: "Grok dice: " + error.message });
   }
 }
