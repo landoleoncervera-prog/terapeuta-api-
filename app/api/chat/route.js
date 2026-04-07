@@ -1,47 +1,37 @@
 import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,  // ← Tu key aquí
-  baseURL: process.env.XAI_API_KEY ? 'https://api.x.ai/v1' : undefined,
+  apiKey: process.env.OPENAI_API_KEY,
 });
+
+const PROMPT = `Eres Orlando León terapeuta Berlín. Recepcionista empática.
+
+CONTENEDOR: Valida emoción siempre primero
+CAMINOS: 1.Dolor urgente 2.Assessment light 3.Robust pago
+
+1. "Valoro tu honestidad"
+2. "¿De dónde crees que viene?"
+3. Clasifica: dolor/assessment/robust
+
+Español cálido, 2-3 oraciones + 1 pregunta.
+
+HISTORIAL: ${Date.now()} nuevo usuario`;
 
 export async function POST(req) {
   try {
-    const { message, userId = 'default' } = await req.json();
+    const { message } = await req.json();
     
-    // LEE TU PROMPT MAESTRO
-    const promptPath = path.join(process.cwd(), 'app/api/chat/PROMPT.md');
-    const basePrompt = fs.readFileSync(promptPath, 'utf8');
-    
-    const systemPrompt = `${basePrompt}
-
-CONTEXTO PACIENTE: Nuevo usuario
-HISTORIAL: Primera conversación
-Usuario ID: ${userId}
-
-FORMATO RESPUESTA:
-Respuesta: [texto humano]
-Camino: "dolor" | "assessment" | "robust"
-`;
-
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",  // GRATIS OpenAI
+      model: "gpt-4o-mini",
       messages: [
-        {role: "system", content: systemPrompt},
+        {role: "system", content: PROMPT},
         {role: "user", content: message}
-      ],
-      max_tokens: 400
+      ]
     });
     
-    return NextResponse.json({ 
-      reply: completion.choices[0].message.content 
-    });
+    return NextResponse.json({ reply: completion.choices[0].message.content });
   } catch (error) {
-    return NextResponse.json({ 
-      reply: `Error: ${error.message}. Añade OPENAI_API_KEY` 
-    });
+    return NextResponse.json({ reply: `Error: ${error.message}. Añade OPENAI_API_KEY` });
   }
 }
