@@ -11,15 +11,16 @@ export async function POST(req) {
     const { message } = await req.json();
     
     const completion = await openai.chat.completions.create({
-      model: "grok-3",  // ← CAMBIO AQUÍ
+      model: "grok-2-latest",
       messages: [
-        {role: "system", content: "Eres Orlando Leon terapeuta Berlín. Español empático nutrición fitness."},
+        {role: "system", content: "Eres Orlando Leon, terapeuta en Berlín. Especialista en regulación emocional, nutrición, fitness. Responde en español empático y profesional."},
         {role: "user", content: message}
-      ]
+      ],
+      max_tokens: 800
     });
     
     return NextResponse.json({ reply: completion.choices[0].message.content });
   } catch (error) {
-    return NextResponse.json({ reply: "Error: " + error.message });
+    return NextResponse.json({ reply: `Error Grok: ${error.message}` });
   }
 }
