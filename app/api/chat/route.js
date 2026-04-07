@@ -11,7 +11,7 @@ export async function POST(req) {
     const { message } = await req.json();
     
     const completion = await openai.chat.completions.create({
-      model: "grok-beta",
+      model: "grok-3",  // ← CAMBIO AQUÍ
       messages: [
         {role: "system", content: "Eres Orlando Leon terapeuta Berlín. Español empático nutrición fitness."},
         {role: "user", content: message}
@@ -20,6 +20,6 @@ export async function POST(req) {
     
     return NextResponse.json({ reply: completion.choices[0].message.content });
   } catch (error) {
-    return NextResponse.json({ reply: "Grok dice: " + error.message });
+    return NextResponse.json({ reply: "Error: " + error.message });
   }
 }
