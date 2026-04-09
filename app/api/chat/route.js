@@ -2,14 +2,12 @@ import OpenAI from 'openai';
 
 export async function POST(request) {
   try {
-    // DEBUG: Ver si key existe
-    const key = process.env.OPENAI_API_KEY;
-    if (!key) {
-      return Response.json({ error: "OPENAI_API_KEY no encontrada" }, { status: 500 });
-    }
-    
-    const openai = new OpenAI({ apiKey: key });
     const { messages } = await request.json();
+    
+    // TU KEY AQUÍ (copia de openai.com)
+    const openai = new OpenAI({ 
+      apiKey: "sk-proj-TU-KEY-COMPLETA-AQUÍ" 
+    });
     
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
