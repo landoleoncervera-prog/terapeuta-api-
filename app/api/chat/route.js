@@ -4,7 +4,7 @@ export async function POST(request) {
   try {
     const { messages } = await request.json();
     
-    // TU KEY AQUÍ (copia de openai.com)
+    // PEGA TU KEY AQUÍ EXACTA de openai.com
     const openai = new OpenAI({ 
       apiKey: "sk-proj-TU-KEY-COMPLETA-AQUÍ" 
     });
