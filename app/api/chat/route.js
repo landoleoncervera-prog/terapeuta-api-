@@ -1,6 +1,3 @@
-Reemplaza TODO el código con ESTE:
-
-```javascript
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
@@ -13,13 +10,12 @@ export async function POST(request) {
     const { input } = await request.json();
     
     const response = await openai.chat.completions.create({
-      model: "grok-beta", // O tu modelo disponible
+      model: "grok-4.20-reasoning",
       messages: [{ role: "user", content: input }],
     });
     
-    return Response.json({ response: response.choices.message.content });
+    return Response.json({ response: response.choices[0].message.content });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
-```
